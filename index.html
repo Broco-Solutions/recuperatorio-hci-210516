@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Recuperatorio Primer Parcial — Fundamentos de Interacción</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Text:ital@0;1&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF7F4; --accent:#C8956C; --accent-dark:#A87649;
+  --dark:#1A1A1A; --light:#F2EBE4; --muted:#6B6660;
+  --success:#4A7C4F; --error:#C25450; --border:#E5DDD5;
+  --shadow: 0 1px 3px rgba(26,26,26,.05), 0 4px 12px rgba(26,26,26,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--dark);font-family:'Public Sans',system-ui,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{min-height:100vh}
+h1,h2,h3,h4{font-family:'DM Serif Text',Georgia,serif;font-weight:400;line-height:1.2;color:var(--dark)}
+em,i{font-family:'DM Serif Text',Georgia,serif;font-style:italic}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.top-bar{background:var(--accent);height:8px;width:100%}
+.container{max-width:780px;margin:0 auto;padding:32px 20px 80px}
+.muted{color:var(--muted)}
+.small{font-size:.875rem}
+
+/* ==== LOGIN SCREEN ==== */
+.exam-header{text-align:center;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+.kicker{font-size:.75rem;letter-spacing:.15em;color:var(--accent-dark);font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.subkicker{font-size:.875rem;color:var(--muted);margin-bottom:20px}
+.exam-header h1{font-size:2.5rem;margin-bottom:6px}
+.subtitle{font-family:'DM Serif Text',serif;font-style:italic;font-size:1.25rem;color:var(--accent-dark);margin-bottom:12px}
+.meta{font-size:.875rem;color:var(--muted)}
+
+.login-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px;box-shadow:var(--shadow)}
+.login-card h2{font-size:1.5rem;margin-bottom:8px}
+.login-card>p{color:var(--muted);margin-bottom:20px}
+.login-card input[type="text"]{width:100%;padding:14px 16px;font-size:1rem;font-family:inherit;border:1.5px solid var(--border);border-radius:8px;background:#fff;color:var(--dark);margin-bottom:16px;transition:border-color .15s}
+.login-card input[type="text"]:focus{outline:none;border-color:var(--accent)}
+.btn-primary{display:block;width:100%;padding:14px 20px;background:var(--dark);color:#fff;border-radius:8px;font-size:1rem;font-weight:600;transition:background .15s,transform .05s}
+.btn-primary:hover:not(:disabled){background:#000}
+.btn-primary:active:not(:disabled){transform:scale(.99)}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-secondary{display:block;width:100%;padding:12px 20px;background:transparent;color:var(--dark);border:1.5px solid var(--border);border-radius:8px;font-size:1rem;font-weight:500}
+.btn-secondary:hover{background:var(--light)}
+
+.instructions-card{background:var(--light);border-radius:12px;padding:24px;margin-bottom:24px}
+.instructions-card h3{font-size:1.125rem;margin-bottom:12px;color:var(--dark)}
+.instructions-card ul{padding-left:20px}
+.instructions-card li{margin-bottom:8px;font-size:.9375rem}
+.instructions-card li::marker{color:var(--accent)}
+
+footer{text-align:center;padding-top:32px;font-size:.8125rem;color:var(--muted)}
+
+/* ==== EXAM SCREEN ==== */
+.exam-bar{position:sticky;top:0;background:rgba(251,247,244,.92);backdrop-filter:saturate(140%) blur(10px);-webkit-backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--border);z-index:50;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.exam-bar-left{display:flex;flex-direction:column;min-width:0}
+.exam-bar-left strong{font-size:.9375rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60vw}
+.exam-bar-left .muted{font-size:.75rem}
+.exam-bar-right{display:flex;align-items:center;gap:12px}
+#progress-text{font-size:.8125rem;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+#submit-btn{padding:8px 14px;background:var(--dark);color:#fff;border-radius:6px;font-size:.875rem;font-weight:600;white-space:nowrap}
+
+#exam-screen h2{font-size:1.625rem;margin-top:32px;margin-bottom:8px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+#exam-screen h2:first-of-type{margin-top:0}
+.hint{color:var(--muted);font-size:.9375rem;margin-bottom:24px;padding:12px 16px;background:var(--light);border-radius:8px;border-left:3px solid var(--accent)}
+
+.question{background:#fff;border:1px solid var(--border);border-radius:12px;padding:22px 22px 16px;margin-bottom:18px;box-shadow:var(--shadow);transition:border-color .15s}
+.question.answered{border-color:rgba(74,124,79,.3)}
+.q-header{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.q-num{font-family:'DM Serif Text',serif;font-size:1.125rem;color:var(--accent-dark);font-weight:400;letter-spacing:.02em}
+.q-title{font-size:.8125rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+.q-statement{font-size:1rem;line-height:1.5;margin-bottom:16px;color:var(--dark)}
+.q-options{list-style:none;display:flex;flex-direction:column;gap:8px}
+.q-option{position:relative}
+.q-option label{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .12s;user-select:none}
+.q-option label:hover{border-color:var(--accent);background:#fff}
+.q-option input[type="checkbox"]{flex-shrink:0;width:20px;height:20px;margin-top:1px;accent-color:var(--accent-dark);cursor:pointer}
+.q-option input[type="checkbox"]:checked + .opt-letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+.q-option label:has(input:checked){border-color:var(--accent);background:#FFF8F2}
+.opt-letter{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#fff;border:1.5px solid var(--border);font-weight:700;font-size:.8125rem;flex-shrink:0;transition:all .12s}
+.opt-text{flex:1;font-size:.9375rem;line-height:1.45}
+
+.exercise{background:#fff;border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.exercise .q-header{margin-bottom:12px}
+.ex-context{background:var(--light);border-radius:8px;padding:14px 16px;margin-bottom:14px;font-size:.9375rem}
+.ex-context p{margin-bottom:8px}
+.ex-context p:last-child{margin-bottom:0}
+.ex-context ul{margin:8px 0 0 18px}
+.ex-context li{margin-bottom:4px}
+.ex-consigna{font-size:.9375rem;margin-bottom:12px}
+.ex-consigna strong{color:var(--accent-dark)}
+.ex-consigna ol{margin:8px 0 0 22px}
+.ex-consigna li{margin-bottom:4px}
+.exercise textarea{width:100%;min-height:360px;padding:14px 16px;font-family:inherit;font-size:.9375rem;line-height:1.55;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--dark);resize:vertical}
+.exercise textarea:focus{outline:none;border-color:var(--accent);background:#fff}
+.char-count{font-size:.75rem;color:var(--muted);text-align:right;margin-top:6px;font-variant-numeric:tabular-nums}
+
+.submit-zone{margin-top:40px;padding:28px;background:var(--light);border-radius:12px;text-align:center}
+#submit-btn-bottom{display:inline-block;padding:14px 32px;background:var(--dark);color:#fff;border-radius:8px;font-size:1rem;font-weight:600}
+#submit-btn-bottom:hover{background:#000}
+#submit-status{margin-bottom:14px;font-size:.9375rem;color:var(--muted)}
+
+/* ==== CONFIRMATION SCREEN ==== */
+.confirm-container{max-width:560px;padding-top:60px;text-align:center}
+.confirm-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:48px 32px;box-shadow:var(--shadow)}
+.check-icon{width:72px;height:72px;border-radius:50%;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center;font-size:2.25rem;font-weight:700;margin:0 auto 24px}
+.confirm-card h1{font-size:2rem;margin-bottom:14px}
+.confirm-name{font-size:1.0625rem;margin-bottom:6px}
+.code-box{margin:32px 0 16px;padding:18px;background:var(--bg);border:1px dashed var(--border);border-radius:10px}
+.code-label{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-weight:600}
+.code-value{font-family:'JetBrains Mono','SF Mono',Menlo,monospace;font-size:1.25rem;font-weight:700;color:var(--dark);letter-spacing:.04em}
+
+/* ==== MODALS ==== */
+#modal-backdrop{position:fixed;inset:0;background:rgba(26,26,26,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:100;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#fff;border-radius:14px;padding:28px 24px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);animation:slideUp .25s}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal h3{font-size:1.375rem;margin-bottom:10px}
+.modal p{color:var(--muted);margin-bottom:8px;font-size:.9375rem}
+.modal .confirm-name-modal{color:var(--dark);font-weight:600;font-size:1.0625rem;margin-bottom:14px}
+.modal-actions{display:flex;gap:10px;margin-top:20px}
+.modal-actions button{flex:1;padding:12px 16px;border-radius:8px;font-weight:600;font-size:.9375rem}
+.modal-actions .btn-secondary{padding:12px 16px}
+.spinner{width:40px;height:40px;border:3px solid var(--light);border-top-color:var(--accent);border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#error-message{color:var(--error);font-weight:500}
+
+/* ==== UTILS ==== */
+[hidden]{display:none !important}
+
+/* ==== MOBILE ==== */
+@media (max-width:600px){
+  .container{padding:24px 16px 80px}
+  .exam-header h1{font-size:2rem}
+  .login-card,.instructions-card,.exercise{padding:20px}
+  .question{padding:18px 16px 14px}
+  .q-statement{font-size:.9375rem}
+  .opt-text{font-size:.875rem}
+  .exam-bar{padding:10px 16px}
+  .exam-bar-left strong{max-width:50vw;font-size:.875rem}
+  #progress-text{display:none}
+  #submit-btn{padding:7px 12px;font-size:.8125rem}
+  .exercise textarea{min-height:280px}
+  .modal{padding:24px 20px}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<section id="login-screen" class="screen">
+  <div class="container">
+    <header class="exam-header">
+      <p class="kicker">UNIVERSIDAD CATÓLICA ARGENTINA</p>
+      <p class="subkicker">Facultad de Ciencias Económicas — Rosario · LGND</p>
+      <h1>Recuperatorio — Primer Parcial</h1>
+      <p class="subtitle">Fundamentos de Interacción</p>
+      <p class="meta">Unidades 1, 2 y 3 · 21 de mayo de 2026</p>
+    </header>
+
+    <div class="login-card">
+      <h2>Identificate</h2>
+      <p>Escribí tu apellido y nombre para comenzar.</p>
+      <input type="text" id="student-input" placeholder="Apellido, Nombre" autocomplete="off" autocapitalize="words" />
+      <button class="btn-primary" id="start-btn" disabled>Comenzar parcial</button>
+    </div>
+
+    <div class="instructions-card">
+      <h3>Instrucciones</h3>
+      <ul>
+        <li>El parcial consta de <strong>20 preguntas multiple choice</strong> y <strong>2 ejercicios de desarrollo</strong>.</li>
+        <li>Cada pregunta tiene 5 opciones (A, B, C, D y E). Marcá todas las opciones que consideres correctas.</li>
+        <li>La opción <strong>"E — Ninguna de las opciones anteriores es correcta"</strong> es <strong>mutuamente excluyente</strong>: si la marcás, las demás se destildan automáticamente.</li>
+        <li>Tus respuestas se guardan automáticamente en este dispositivo. Si se cierra la página, podés retomar donde dejaste.</li>
+        <li>Una vez que finalices y envíes el parcial, no vas a poder modificar tus respuestas.</li>
+        <li>No se permite el uso de apuntes, computadora con material adicional, ni consulta a terceros.</li>
+      </ul>
+    </div>
+
+    <footer>
+      Ing. Boglione Franco · Ing. Coirini Renzo<br>
+      Lic. en Gestión de Negocios Digitales · 4° año · 1er semestre 2026
+    </footer>
+  </div>
+</section>
+
+<!-- ==================== EXAM SCREEN ==================== -->
+<section id="exam-screen" class="screen" hidden>
+  <header class="exam-bar">
+    <div class="exam-bar-left">
+      <strong id="student-name-display"></strong>
+      <span class="muted">Fundamentos de Interacción · Recuperatorio</span>
+    </div>
+    <div class="exam-bar-right">
+      <span id="progress-text">0/20</span>
+      <button id="submit-btn">Finalizar y enviar</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>Parte A — Multiple Choice</h2>
+    <p class="hint">Marcá <strong>todas</strong> las opciones que consideres correctas. La opción <strong>"E — Ninguna correcta"</strong> es mutuamente excluyente con A/B/C/D.</p>
+    <div id="questions-container"></div>
+
+    <h2>Parte B — Desarrollo</h2>
+    <p class="hint">Se valora la <strong>fundamentación</strong>, la conexión con los conceptos vistos en clase y la <strong>coherencia de la propuesta</strong>. Respondé cada sub-punto dentro del mismo cuadro, numerándolos para que se entienda.</p>
+    <div id="exercises-container"></div>
+
+    <div class="submit-zone">
+      <p id="submit-status">Revisá que hayas respondido todo antes de enviar.</p>
+      <button class="btn-primary" id="submit-btn-bottom" style="display:inline-block;width:auto">Finalizar y enviar parcial</button>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== CONFIRMATION SCREEN ==================== -->
+<section id="confirmation-screen" class="screen" hidden>
+  <div class="container confirm-container">
+    <div class="confirm-card">
+      <div class="check-icon">✓</div>
+      <h1>Parcial entregado</h1>
+      <p class="confirm-name">Gracias, <strong id="confirm-student"></strong>.</p>
+      <p class="muted">Tu examen fue recibido correctamente.</p>
+      <div class="code-box">
+        <p class="code-label">Código de envío</p>
+        <p class="code-value" id="confirm-code"></p>
+      </div>
+      <p class="muted small">Mostrale este código al docente para confirmar tu entrega.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== MODALS ==================== -->
+<div id="modal-backdrop" hidden>
+
+  <div class="modal" id="confirm-start-modal" hidden>
+    <h3>¿Confirmás que comenzás como...?</h3>
+    <p class="confirm-name-modal" id="confirm-start-name"></p>
+    <p>Este nombre se enviará junto con tus respuestas. Si te equivocaste al escribir, cancelá y volvé a corregirlo.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancel-start">Cancelar</button>
+      <button class="btn-primary" id="confirm-start">Sí, comenzar</button>
+    </div>
+  </div>
+
+  <div class="modal" id="confirm-submit-modal" hidden>
+    <h3>¿Estás segura de finalizar?</h3>
+    <p>Una vez enviado el parcial, <strong>no vas a poder modificar tus respuestas</strong>.</p>
+    <p id="submit-warning" class="muted"></p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="cancel-submit">Seguir respondiendo</button>
+      <button class="btn-primary" id="confirm-submit">Sí, enviar</button>
+    </div>
+  </div>
+
+  <div class="modal" id="submitting-modal" hidden style="text-align:center">
+    <div class="spinner"></div>
+    <p style="color:var(--dark);font-weight:500">Enviando tu parcial...</p>
+    <p class="small">Esto puede demorar unos segundos. No cierres la página.</p>
+  </div>
+
+  <div class="modal" id="error-modal" hidden>
+    <h3>No pudimos enviar tu parcial</h3>
+    <p id="error-message"></p>
+    <p>Tus respuestas están guardadas en este dispositivo. Podés intentar enviarlas de nuevo, o avisarle al docente.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="dismiss-error">Cerrar</button>
+      <button class="btn-primary" id="retry-submit">Reintentar envío</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+// ============================================================
+// CONFIGURACIÓN — EDITAR ANTES DE PUBLICAR
+// ============================================================
+
+// URL del Web App de Google Apps Script.
+// Pegar acá la URL que termina en /exec luego de hacer "Implementar como aplicación web".
+const APPS_SCRIPT_URL = "REEMPLAZAR_CON_URL_DE_APPS_SCRIPT_RECUPERATORIO";
+
+// ============================================================
+// PREGUNTAS Y EJERCICIOS
+// ============================================================
+
+const QUESTIONS = [
+  {
+    id: 1, unit: "Unidad 1", title: "Interacción Humano-Computadora",
+    statement: "Sobre la Interacción Humano-Computadora, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Se ocupa únicamente de la programación de sistemas." },
+      { letter: "B", text: "Analiza la relación entre personas, tecnología, tareas y contexto de uso." },
+      { letter: "C", text: "Busca que todas las interfaces sean visualmente iguales." },
+      { letter: "D", text: "Integra aportes del diseño, la psicología, la informática y la comunicación." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 2, unit: "Unidad 1", title: "UX y UI",
+    statement: "Sobre UX y UI, es correcto decir que:",
+    options: [
+      { letter: "A", text: "La UI forma parte de la experiencia de usuario." },
+      { letter: "B", text: "La UX incluye percepciones, emociones, facilidad de uso y satisfacción." },
+      { letter: "C", text: "Una interfaz visualmente atractiva puede igualmente generar una mala experiencia." },
+      { letter: "D", text: "La experiencia de usuario puede verse afectada por factores previos y posteriores al uso del sistema." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 3, unit: "Unidad 1", title: "Modelo mental del usuario",
+    statement: "El modelo mental del usuario se refiere a:",
+    options: [
+      { letter: "A", text: "La interpretación que el usuario construye sobre cómo funciona un sistema." },
+      { letter: "B", text: "El código fuente de la aplicación." },
+      { letter: "C", text: "La arquitectura técnica del servidor." },
+      { letter: "D", text: "El diseño de la base de datos." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 4, unit: "Unidad 1", title: "Affordances y signifiers",
+    statement: "En relación con affordances y signifiers, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Una affordance sugiere qué acciones son posibles sobre un objeto o elemento." },
+      { letter: "B", text: "Un signifier ayuda a comunicar cómo debe usarse un elemento de la interfaz." },
+      { letter: "C", text: "Ambos conceptos son irrelevantes en interfaces digitales." },
+      { letter: "D", text: "Solo se aplican al diseño de objetos físicos, nunca a software." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 5, unit: "Unidad 1", title: "Usabilidad",
+    statement: "Sobre usabilidad, ¿cuál(es) de las siguientes afirmaciones es/son correcta(s)?",
+    options: [
+      { letter: "A", text: "La usabilidad consiste en agregar la mayor cantidad posible de funciones." },
+      { letter: "B", text: "Una interfaz usable debe ser necesariamente compleja." },
+      { letter: "C", text: "La usabilidad depende únicamente de la estética visual." },
+      { letter: "D", text: "Una interfaz usable no necesita ser comprendida por el usuario." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 6, unit: "Unidad 1", title: "Interfaz con buena usabilidad",
+    statement: "Una interfaz con buena usabilidad debería principalmente:",
+    options: [
+      { letter: "A", text: "Sorprender al usuario en cada pantalla." },
+      { letter: "B", text: "Permitir que el usuario cumpla sus objetivos de forma clara, eficiente y satisfactoria." },
+      { letter: "C", text: "Ocultar las acciones principales para mantener una estética limpia." },
+      { letter: "D", text: "Evitar todo tipo de mensajes o indicaciones." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 7, unit: "Unidad 1", title: "Feedback en una interfaz",
+    statement: "El feedback en una interfaz es importante porque:",
+    options: [
+      { letter: "A", text: "Permite que el usuario sepa si una acción fue realizada correctamente." },
+      { letter: "B", text: "Elimina la necesidad de diseñar una navegación clara." },
+      { letter: "C", text: "Reduce la incertidumbre durante el uso del sistema." },
+      { letter: "D", text: "Solo sirve para decorar la pantalla." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 8, unit: "Unidad 1", title: "Accesibilidad digital",
+    statement: "Sobre accesibilidad digital, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Puede beneficiar tanto a personas con discapacidad como a usuarios en situaciones contextuales difíciles." },
+      { letter: "B", text: "Incluye aspectos como contraste, navegación por teclado y textos alternativos." },
+      { letter: "C", text: "No debería tratarse como un agregado final, sino como parte del diseño desde el inicio." },
+      { letter: "D", text: "Mejora la posibilidad de que más personas puedan utilizar un producto digital." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 9, unit: "Unidad 1", title: "Carga cognitiva",
+    statement: "Sobre carga cognitiva, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Aumenta cuando el usuario debe recordar demasiada información al mismo tiempo." },
+      { letter: "B", text: "Puede reducirse usando jerarquía visual, agrupación y lenguaje claro." },
+      { letter: "C", text: "Siempre mejora la experiencia porque obliga al usuario a concentrarse más." },
+      { letter: "D", text: "No tiene relación con el diseño de interfaces." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 10, unit: "Unidad 1", title: "Heurística de Nielsen: visibilidad del estado del sistema",
+    statement: "Una heurística de Nielsen relacionada con la visibilidad del estado del sistema indica que:",
+    options: [
+      { letter: "A", text: "El sistema debería mantener informado al usuario sobre lo que está ocurriendo." },
+      { letter: "B", text: "El sistema debería ocultar todos los procesos internos sin dar señales." },
+      { letter: "C", text: "El usuario nunca necesita confirmaciones." },
+      { letter: "D", text: "Los mensajes de estado solo son necesarios en sistemas bancarios." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 11, unit: "Unidad 1", title: "Consistencia en una interfaz",
+    statement: "La consistencia en una interfaz implica:",
+    options: [
+      { letter: "A", text: "Usar patrones similares para acciones similares." },
+      { letter: "B", text: "Mantener una lógica coherente de navegación, textos, botones e iconos." },
+      { letter: "C", text: "Cambiar los nombres de las acciones en cada pantalla para evitar monotonía." },
+      { letter: "D", text: "Diseñar cada sección con reglas completamente distintas." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 12, unit: "Unidad 1", title: "Wireframes",
+    statement: "Un wireframe sirve principalmente para:",
+    options: [
+      { letter: "A", text: "Definir el código final de una aplicación." },
+      { letter: "B", text: "Reemplazar una prueba con usuarios." },
+      { letter: "C", text: "Representar la estructura, jerarquía y distribución básica de una pantalla." },
+      { letter: "D", text: "Presentar la identidad visual definitiva del producto." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 13, unit: "Unidad 1", title: "Diseño centrado en el usuario",
+    statement: "Sobre diseño centrado en el usuario, es correcto decir que:",
+    options: [
+      { letter: "A", text: "Parte de comprender necesidades, objetivos y contexto de las personas usuarias." },
+      { letter: "B", text: "Puede incluir entrevistas, observación, pruebas y análisis de comportamiento." },
+      { letter: "C", text: "Requiere iterar soluciones a partir de evidencia y feedback." },
+      { letter: "D", text: "Busca diseñar productos más útiles, comprensibles y adecuados al contexto real." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 14, unit: "Unidad 1", title: "Errores en interfaces",
+    statement: "Sobre errores en interfaces, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Es conveniente prevenir errores antes de que ocurran." },
+      { letter: "B", text: "Los mensajes de error deberían explicar qué pasó y cómo continuar." },
+      { letter: "C", text: "El usuario siempre es el responsable principal del error." },
+      { letter: "D", text: "Un error no necesita explicación si el diseño visual es atractivo." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 15, unit: "Unidad 3", title: "Prototipo interactivo en Figma",
+    statement: "Un prototipo interactivo en Figma permite principalmente:",
+    options: [
+      { letter: "A", text: "Publicar automáticamente una aplicación funcional en producción." },
+      { letter: "B", text: "Simular recorridos, interacciones y flujos antes del desarrollo técnico." },
+      { letter: "C", text: "Eliminar la necesidad de definir usuarios." },
+      { letter: "D", text: "Reemplazar completamente el trabajo de análisis del problema." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 16, unit: "Unidad 3", title: "Ética en el diseño de interfaces",
+    statement: "Sobre ética en el diseño de interfaces, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Implica evitar patrones engañosos o manipuladores." },
+      { letter: "B", text: "Incluye considerar privacidad, consentimiento y transparencia." },
+      { letter: "C", text: "Puede influir directamente en la confianza del usuario." },
+      { letter: "D", text: "Debe contemplarse al tomar decisiones de diseño y negocio." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 17, unit: "Unidad 2", title: "Herramientas de gestión de proyectos",
+    statement: "En proyectos digitales, herramientas como Trello, Notion, Jira o Asana pueden servir para:",
+    options: [
+      { letter: "A", text: "Organizar tareas, responsables y estados de avance." },
+      { letter: "B", text: "Garantizar automáticamente que el producto será exitoso." },
+      { letter: "C", text: "Facilitar la planificación, seguimiento y coordinación del equipo." },
+      { letter: "D", text: "Reemplazar completamente la comunicación entre integrantes." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 18, unit: "Unidad 2", title: "Metodologías ágiles",
+    statement: "Sobre metodologías ágiles, ¿cuál(es) de las siguientes afirmaciones es/son correcta(s)?",
+    options: [
+      { letter: "A", text: "En metodologías ágiles nunca se permite modificar una planificación." },
+      { letter: "B", text: "El feedback del usuario no tiene importancia." },
+      { letter: "C", text: "El equipo debe evitar entregar valor de forma incremental." },
+      { letter: "D", text: "La colaboración entre personas es irrelevante." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 19, unit: "Unidad 2", title: "MVP (Minimum Viable Product)",
+    statement: "Sobre el concepto de MVP, es correcto afirmar que:",
+    options: [
+      { letter: "A", text: "Es una versión inicial que permite validar una propuesta con el menor alcance viable." },
+      { letter: "B", text: "Debe incluir todas las funcionalidades imaginadas desde el primer lanzamiento." },
+      { letter: "C", text: "Ayuda a aprender del usuario antes de invertir en desarrollos más grandes." },
+      { letter: "D", text: "Es lo mismo que el producto final completamente terminado." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  },
+  {
+    id: 20, unit: "Unidad 1", title: "Prueba de usabilidad",
+    statement: "En una prueba de usabilidad, lo más importante es:",
+    options: [
+      { letter: "A", text: "Observar cómo usuarios reales intentan completar tareas concretas." },
+      { letter: "B", text: "Explicarles paso a paso qué deben hacer para que no se equivoquen." },
+      { letter: "C", text: "Medir únicamente si les gusta el color de la interfaz." },
+      { letter: "D", text: "Evitar registrar errores para no sesgar el resultado." },
+      { letter: "E", text: "Ninguna de las opciones anteriores es correcta." }
+    ]
+  }
+];
+
+const EXERCISES = [
+  {
+    id: 21,
+    title: "Caso de análisis de interfaz — Billetera virtual",
+    contextHtml: `
+      <p>Una billetera virtual permite transferir dinero a otros usuarios. El flujo actual es el siguiente: el usuario ingresa a 'Transferir', busca un contacto, carga el monto, confirma la operación y recibe un comprobante.</p>
+      <p>Sin embargo, varios usuarios cometen errores porque no distinguen claramente entre transferir a un contacto guardado, transferir por alias o transferir por CBU/CVU. Además, algunos no se dan cuenta de que la operación ya fue realizada y vuelven a tocar el botón de confirmar.</p>
+    `,
+    consignaHtml: `
+      <p><strong>Consigna:</strong> Analizá el caso desde los conceptos vistos en clase y proponé mejoras concretas. Tu respuesta debe incluir:</p>
+      <ol>
+        <li>Diagnóstico de los principales problemas de interacción.</li>
+        <li>Relación con al menos tres conceptos teóricos (usabilidad, feedback, modelo mental, carga cognitiva, consistencia, prevención de errores, heurísticas, etc.).</li>
+        <li>Propuestas concretas de mejora para la interfaz.</li>
+        <li>Explicación de cómo validarías si las mejoras funcionan.</li>
+      </ol>
+    `,
+    placeholder: "1) Diagnóstico: ...\n\n2) Conceptos teóricos:\n   - ...\n   - ...\n   - ...\n\n3) Propuestas de mejora:\n   - ...\n\n4) Validación: ..."
+  },
+  {
+    id: 22,
+    title: "Diseño y validación de una solución digital — Plataforma universitaria",
+    contextHtml: `
+      <p>Una universidad quiere crear una plataforma para que los estudiantes puedan consultar horarios, aulas, cambios de clase, fechas de parciales, entregas importantes y avisos de docentes.</p>
+      <p>Actualmente, la información se comunica por distintos canales: mails, grupos de WhatsApp, campus virtual y carteleras. Esto genera confusión, pérdida de información y consultas repetidas.</p>
+    `,
+    consignaHtml: `
+      <p><strong>Consigna:</strong> Diseñá una propuesta inicial de solución desde el enfoque de interacción y experiencia de usuario. Tu respuesta debe incluir:</p>
+      <ol>
+        <li>Público objetivo y necesidad principal.</li>
+        <li>Flujo principal del usuario.</li>
+        <li>Pantallas mínimas del MVP (Minimum Viable Product).</li>
+        <li>Criterios de usabilidad y accesibilidad a considerar.</li>
+        <li>Una forma simple de prototipar la solución en Figma.</li>
+        <li>Una forma de testearla con usuarios reales.</li>
+      </ol>
+    `,
+    placeholder: "1) Público objetivo y necesidad: ...\n\n2) Flujo principal: ...\n\n3) Pantallas del MVP: ...\n\n4) Criterios de usabilidad y accesibilidad: ...\n\n5) Prototipado en Figma: ...\n\n6) Testeo con usuarios: ..."
+  }
+];
+
+// ============================================================
+// UTILS — SEEDED RANDOM, SHUFFLE, HASH
+// ============================================================
+
+function hashSeed(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) {
+    h = (((h << 5) + h) + str.charCodeAt(i)) >>> 0;
+  }
+  return h || 1;
+}
+function makeRng(seed) {
+  let s = seed >>> 0;
+  return function() {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
+function shuffleSeeded(arr, seed) {
+  const rng = makeRng(seed);
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// Normalizar el nombre tipeado para usar como clave consistente
+function normalizeName(s) {
+  return s.trim()
+    .replace(/\s+/g, ' ')
+    .replace(/[\u0300-\u036f]/g, '')  // quitar diacríticos para hash consistente
+    .toLowerCase();
+}
+
+// ============================================================
+// STATE
+// ============================================================
+
+const STORAGE_KEY = "recuperatorio_fundamentos_2026_state";
+const SUBMITTED_KEY = "recuperatorio_fundamentos_2026_submitted";
+
+let state = {
+  studentName: null,
+  startTime: null,
+  questionOrder: [],
+  answers: {},
+  exercise1: "",
+  exercise2: "",
+  visibilityChanges: 0
+};
+
+function saveState() {
+  if (!state.studentName) return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (e) {}
+}
+function loadState(studentName) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (normalizeName(parsed.studentName) !== normalizeName(studentName)) return null;
+    return parsed;
+  } catch (e) { return null; }
+}
+function isAlreadySubmitted(studentName) {
+  try {
+    const raw = localStorage.getItem(SUBMITTED_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (normalizeName(parsed.studentName) === normalizeName(studentName)) return parsed;
+    return null;
+  } catch (e) { return null; }
+}
+function markSubmitted(studentName, code) {
+  try {
+    localStorage.setItem(SUBMITTED_KEY, JSON.stringify({ studentName, code, ts: Date.now() }));
+  } catch (e) {}
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+
+function initLogin() {
+  const input = document.getElementById("student-input");
+  const startBtn = document.getElementById("start-btn");
+  input.addEventListener("input", () => {
+    startBtn.disabled = input.value.trim().length < 3;
+  });
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !startBtn.disabled) startBtn.click();
+  });
+  startBtn.addEventListener("click", () => {
+    const name = input.value.trim().replace(/\s+/g, ' ');
+    if (name.length < 3) return;
+
+    const submitted = isAlreadySubmitted(name);
+    if (submitted) {
+      showConfirmation(name, submitted.code, true);
+      return;
+    }
+    document.getElementById("confirm-start-name").textContent = name;
+    showModal("confirm-start-modal");
+  });
+
+  document.getElementById("cancel-start").addEventListener("click", hideModals);
+  document.getElementById("confirm-start").addEventListener("click", () => {
+    hideModals();
+    startExam(input.value.trim().replace(/\s+/g, ' '));
+  });
+}
+
+// ============================================================
+// EXAM
+// ============================================================
+
+function startExam(studentName) {
+  state.studentName = studentName;
+
+  const saved = loadState(studentName);
+  if (saved && saved.questionOrder && saved.questionOrder.length === 20) {
+    state = saved;
+    state.visibilityChanges = saved.visibilityChanges || 0;
+  } else {
+    const seedBase = normalizeName(studentName);
+    const qSeed = hashSeed(seedBase + "::questions");
+    const shuffledQs = shuffleSeeded(QUESTIONS, qSeed);
+    state.questionOrder = shuffledQs.map(q => {
+      const oSeed = hashSeed(seedBase + "::q" + q.id + "::opts");
+      const shuffledOpts = shuffleSeeded(q.options, oSeed);
+      return {
+        originalId: q.id,
+        displayedOptions: shuffledOpts.map(o => ({ originalLetter: o.letter, text: o.text }))
+      };
+    });
+    state.answers = {};
+    state.exercise1 = "";
+    state.exercise2 = "";
+    state.startTime = new Date().toISOString();
+    state.visibilityChanges = 0;
+    saveState();
+  }
+
+  document.getElementById("login-screen").hidden = true;
+  document.getElementById("exam-screen").hidden = false;
+  document.getElementById("student-name-display").textContent = studentName;
+
+  renderExam();
+  setupVisibilityTracking();
+  window.scrollTo(0, 0);
+}
+
+function renderExam() {
+  const qContainer = document.getElementById("questions-container");
+  qContainer.innerHTML = "";
+
+  state.questionOrder.forEach((qOrder, displayIdx) => {
+    const q = QUESTIONS.find(x => x.id === qOrder.originalId);
+    const qNum = displayIdx + 1;
+    const qDiv = document.createElement("div");
+    qDiv.className = "question";
+    qDiv.dataset.qid = q.id;
+
+    const currentAnswer = state.answers[q.id] || [];
+
+    qDiv.innerHTML = `
+      <div class="q-header">
+        <span class="q-num">Pregunta ${qNum}</span>
+        <span class="q-title">${escapeHtml(q.title)}</span>
+      </div>
+      <p class="q-statement">${escapeHtml(q.statement)}</p>
+      <ul class="q-options">
+        ${qOrder.displayedOptions.map((opt, i) => {
+          const displayLetter = String.fromCharCode(65 + i);
+          const checked = currentAnswer.includes(opt.originalLetter) ? "checked" : "";
+          return `
+            <li class="q-option">
+              <label>
+                <input type="checkbox" data-qid="${q.id}" data-original-letter="${opt.originalLetter}" ${checked}>
+                <span class="opt-letter">${displayLetter}</span>
+                <span class="opt-text">${escapeHtml(opt.text)}</span>
+              </label>
+            </li>
+          `;
+        }).join("")}
+      </ul>
+    `;
+    if (currentAnswer.length > 0) qDiv.classList.add("answered");
+    qContainer.appendChild(qDiv);
+  });
+
+  qContainer.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+    cb.addEventListener("change", onAnswerChange);
+  });
+
+  const exContainer = document.getElementById("exercises-container");
+  exContainer.innerHTML = "";
+  EXERCISES.forEach((ex, idx) => {
+    const exDiv = document.createElement("div");
+    exDiv.className = "exercise";
+    const stateKey = idx === 0 ? "exercise1" : "exercise2";
+    const currentText = state[stateKey] || "";
+    exDiv.innerHTML = `
+      <div class="q-header">
+        <span class="q-num">Ejercicio ${ex.id}</span>
+        <span class="q-title">${escapeHtml(ex.title)}</span>
+      </div>
+      <div class="ex-context">${ex.contextHtml}</div>
+      <div class="ex-consigna">${ex.consignaHtml}</div>
+      <textarea data-ex-key="${stateKey}" placeholder="${escapeHtml(ex.placeholder)}">${escapeHtml(currentText)}</textarea>
+      <p class="char-count" data-for="${stateKey}">${currentText.length} caracteres</p>
+    `;
+    exContainer.appendChild(exDiv);
+  });
+  exContainer.querySelectorAll("textarea").forEach(ta => {
+    ta.addEventListener("input", onExerciseChange);
+  });
+
+  updateProgress();
+
+  document.getElementById("submit-btn").onclick = onSubmitClick;
+  document.getElementById("submit-btn-bottom").onclick = onSubmitClick;
+}
+
+function onAnswerChange(e) {
+  const cb = e.target;
+  const qid = parseInt(cb.dataset.qid, 10);
+  const letter = cb.dataset.originalLetter;
+  if (!state.answers[qid]) state.answers[qid] = [];
+
+  // Comportamiento mutuamente excluyente:
+  // - Marcar E destilda A/B/C/D automáticamente
+  // - Marcar A/B/C/D destilda E automáticamente
+  if (cb.checked) {
+    if (letter === "E") {
+      // Destildar A/B/C/D en el state y en el DOM
+      state.answers[qid] = ["E"];
+      const card = cb.closest(".question");
+      card.querySelectorAll('input[type="checkbox"]').forEach(otherCb => {
+        if (otherCb.dataset.originalLetter !== "E") otherCb.checked = false;
+      });
+    } else {
+      // Sacar E si estaba, y agregar la letra
+      state.answers[qid] = state.answers[qid].filter(l => l !== "E");
+      const card = cb.closest(".question");
+      const eCb = card.querySelector('input[data-original-letter="E"]');
+      if (eCb) eCb.checked = false;
+      if (!state.answers[qid].includes(letter)) state.answers[qid].push(letter);
+    }
+  } else {
+    state.answers[qid] = state.answers[qid].filter(l => l !== letter);
+  }
+
+  const card = cb.closest(".question");
+  if (state.answers[qid].length > 0) card.classList.add("answered");
+  else card.classList.remove("answered");
+  saveState();
+  updateProgress();
+}
+
+function onExerciseChange(e) {
+  const ta = e.target;
+  const key = ta.dataset.exKey;
+  state[key] = ta.value;
+  saveState();
+  const counter = document.querySelector(`.char-count[data-for="${key}"]`);
+  if (counter) counter.textContent = `${ta.value.length} caracteres`;
+}
+
+function updateProgress() {
+  const answered = Object.values(state.answers).filter(a => a && a.length > 0).length;
+  document.getElementById("progress-text").textContent = `${answered}/20`;
+  const ex1Done = state.exercise1.trim().length > 0;
+  const ex2Done = state.exercise2.trim().length > 0;
+  const status = document.getElementById("submit-status");
+  const missing = [];
+  if (answered < 20) missing.push(`${20 - answered} pregunta${20-answered === 1 ? "" : "s"} sin responder`);
+  if (!ex1Done) missing.push("Ejercicio 21 vacío");
+  if (!ex2Done) missing.push("Ejercicio 22 vacío");
+  if (missing.length === 0) status.textContent = "Tenés todo respondido. Podés enviar.";
+  else status.textContent = "Faltante: " + missing.join(" · ");
+}
+
+function setupVisibilityTracking() {
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      state.visibilityChanges = (state.visibilityChanges || 0) + 1;
+      saveState();
+    }
+  });
+  window.addEventListener("beforeunload", (e) => {
+    if (state.studentName && !isAlreadySubmitted(state.studentName)) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+
+function onSubmitClick() {
+  const answered = Object.values(state.answers).filter(a => a && a.length > 0).length;
+  const ex1Done = state.exercise1.trim().length > 0;
+  const ex2Done = state.exercise2.trim().length > 0;
+  const warnings = [];
+  if (answered < 20) warnings.push(`Tenés ${20 - answered} pregunta${20-answered === 1 ? "" : "s"} sin responder.`);
+  if (!ex1Done) warnings.push("El Ejercicio 21 está vacío.");
+  if (!ex2Done) warnings.push("El Ejercicio 22 está vacío.");
+  document.getElementById("submit-warning").textContent = warnings.length ? warnings.join(" ") : "";
+  showModal("confirm-submit-modal");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initLogin();
+  document.getElementById("cancel-submit").addEventListener("click", hideModals);
+  document.getElementById("confirm-submit").addEventListener("click", doSubmit);
+  document.getElementById("retry-submit").addEventListener("click", doSubmit);
+  document.getElementById("dismiss-error").addEventListener("click", hideModals);
+});
+
+async function doSubmit() {
+  showModal("submitting-modal");
+
+  const submissionCode = generateCode(state.studentName);
+  const payload = {
+    studentName: state.studentName,
+    startTime: state.startTime,
+    endTime: new Date().toISOString(),
+    submissionCode: submissionCode,
+    answers: state.answers,
+    exercise1: state.exercise1,
+    exercise2: state.exercise2,
+    visibilityChanges: state.visibilityChanges,
+    userAgent: navigator.userAgent.substring(0, 200)
+  };
+
+  try {
+    if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf("REEMPLAZAR") !== -1) {
+      throw new Error("La URL del backend no está configurada. Avisale al docente.");
+    }
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      redirect: "follow"
+    });
+    if (!response.ok) throw new Error("HTTP " + response.status);
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error || "Respuesta inválida del servidor");
+    markSubmitted(state.studentName, submissionCode);
+    hideModals();
+    showConfirmation(state.studentName, submissionCode);
+  } catch (err) {
+    console.error(err);
+    document.getElementById("error-message").textContent = err.message || "Error de red";
+    showModal("error-modal");
+  }
+}
+
+function generateCode(name) {
+  const initials = name.split(/[ ,]+/).filter(Boolean).map(s => s[0]).join("").substring(0,3).toUpperCase();
+  const ts = Date.now().toString(36).slice(-5).toUpperCase();
+  const rand = Math.random().toString(36).slice(2,5).toUpperCase();
+  return `R-${initials}-${ts}-${rand}`;
+}
+
+// ============================================================
+// CONFIRMATION
+// ============================================================
+
+function showConfirmation(name, code, alreadySubmitted) {
+  document.getElementById("login-screen").hidden = true;
+  document.getElementById("exam-screen").hidden = true;
+  document.getElementById("confirmation-screen").hidden = false;
+  document.getElementById("confirm-student").textContent = name;
+  document.getElementById("confirm-code").textContent = code;
+  if (alreadySubmitted) {
+    const card = document.querySelector(".confirm-card");
+    const note = document.createElement("p");
+    note.className = "muted small";
+    note.style.marginTop = "16px";
+    note.textContent = "Este parcial ya fue entregado anteriormente desde este dispositivo.";
+    card.appendChild(note);
+  }
+  window.onbeforeunload = null;
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+
+function showModal(id) {
+  document.getElementById("modal-backdrop").hidden = false;
+  ["confirm-start-modal","confirm-submit-modal","submitting-modal","error-modal"].forEach(m => {
+    document.getElementById(m).hidden = (m !== id);
+  });
+}
+function hideModals() {
+  document.getElementById("modal-backdrop").hidden = true;
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+
+function escapeHtml(s) {
+  if (s == null) return "";
+  return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+}
+
+</script>
+</body>
+</html>
